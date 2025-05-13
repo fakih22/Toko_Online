@@ -91,3 +91,16 @@ Route::get('/cek-ongkir', function () {
 Route::get('/provinces', [RajaOngkirController::class, 'getProvinces']);
 Route::get('/cities', [RajaOngkirController::class, 'getCities']);
 Route::post('/cost', [RajaOngkirController::class, 'getCost']);
+
+
+
+
+Route::prefix('backend')->name('backend.')->group(function () {
+    Route::get('customer', [CustomerController::class, 'index'])->name('customer.index'); // list
+    Route::get('customer/{id}/edit', [CustomerController::class, 'edit'])->name('customer.edit'); // ubah
+    Route::delete('customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy'); // hapus
+    Route::get('customer/{id}/detail', [CustomerController::class, 'show'])->name('customer.detail'); // detail (jika belum ada, kita buat)
+});
+
+
+Route::put('backend/customer/{id}/updateakun', [CustomerController::class, 'updateAkun'])->name('customer.updateAkun')->middleware('auth');

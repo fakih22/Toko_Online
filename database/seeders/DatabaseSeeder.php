@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'nama' => 'Muhammad Fakih',
             'email' => 'fakih@gmail.com',
-            'role' => '0',
+            'role' => '1',
             'status' => 1,
             'hp' => '082336618277',
             'password' => bcrypt('P@55word')
@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'nama' => 'Muhammad Fakih',
             'email' => 'fakih2@gmail.com',
-            'role' => '0',
+            'role' => '1',
             'status' => 0,
             'hp' => '082336618277',
             'password' => bcrypt('12345')

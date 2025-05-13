@@ -36,7 +36,7 @@ class CustomerController extends Controller
                     'role' => '2', // Role customer 
                     'status' => 1, // Status aktif 
                     'password' => Hash::make('default_password'), // Password default (opsional) 
-                    'hp' => '0000000000',
+                    'hp' => '',
                     'foto' => $socialUser->avatar
                 ]);
 
@@ -80,7 +80,16 @@ class CustomerController extends Controller
             'index' => $customer
         ]);
     }
-    
+
+    public function edit(string $id)
+    {
+        $customer = Customer::where('user_id', $id)->firstOrFail();
+        return view('backend.v_customer.edit', [
+            'judul' => 'Ubah Customer',
+            'edit' => $customer
+        ]);
+    }
+
     public function akun($id)
     {
         $loggedInCustomerId = Auth::user()->id;
@@ -145,7 +154,45 @@ class CustomerController extends Controller
             'alamat' => $request->input('alamat'),
             'pos' => $request->input('pos'),
         ]);
-        return redirect()->route('customer.akun', $id)->with('success', 'Data berhasil diperbarui');
+        $userRole = auth()->user()->role;
+        if (auth()->user()->role == 1) {
+            // Admin: arahkan ke backend
+            return redirect()->route('backend.customer.index')->with('success', 'Data berhasil diperbarui');
+        } else {
+            // Customer: tetap di halaman akun
+            return redirect()->route('customer.akun', $id)->with('success', 'Data berhasil diperbarui');
+        }
+    }
+
+
+    public function destroy($id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        // Hapus foto jika ada
+        if ($customer->user->foto) {
+            $fotoPath = public_path('storage/img-customer/') . $customer->user->foto;
+            if (file_exists($fotoPath)) {
+                unlink($fotoPath);
+            }
+        }
+
+        // Hapus data user terlebih dahulu
+        $customer->user->delete();
+
+        // Hapus data customer
+        $customer->delete();
+
+        return redirect()->route('backend.customer.index')->with('success', 'Customer berhasil dihapus');
+    }
+
+    public function show($id)
+    {
+        $customer = Customer::with('user')->where('id', $id)->firstOrFail();
+        return view('backend.v_customer.detail', [
+            'judul' => 'Detail Customer',
+            'customer' => $customer
+        ]);
     }
 
 }
